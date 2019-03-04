@@ -47,7 +47,7 @@ L.Proj4.crs = function (code, options) {
 
 		transformation: options.transformation ? options.transformation :
 			options.origin ? new L.Transformation(1, -options.origin[0], -1, options.origin[1]) :
-			L.Transformation(1, 0, -1, 0),
+			new L.Transformation(1, 0, -1, 0),
 
 		_scale: options.scale ? options.scale :
 			options.resolution ? 1 / options.resolution : // units per pixel

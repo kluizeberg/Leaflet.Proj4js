@@ -15,7 +15,7 @@ See [`demo.html`](demo.html).
 ### Functions
 
 | Method | Returns | Description |
-| :------- | :------ | :---------- |
+| :----- | :------ | :---------- |
 | `projection(<String> code, <String> proj4def?, <Bounds> bounds?)` | [`Projection`](http://leafletjs.com/reference-1.1.0.html#projection) | Projection factory. |
 | `crs(<String> code?, <crs options> options?)` | [`CRS`](http://leafletjs.com/reference-1.1.0.html#crs) | CRS factory. |
 
