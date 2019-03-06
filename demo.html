@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<title>Demo Leaflet.Proj4js</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.1.0/leaflet.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/leaflet.css">
 		<style>
 body {
 	margin: 0;
@@ -14,32 +14,73 @@ body {
 </style>
 	</head>
 	<body><!-- map container -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.1.0/leaflet.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.3/proj4.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/leaflet.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
 		<script src="leaflet.proj4.js"></script>
 		<script>
-// source: http://tile.informatievlaanderen.be/ws/raadpleegdiensten/wmts?request=getcapabilities&service=wmts&version=1.0.0
+// source: https://tile.informatievlaanderen.be/ws/raadpleegdiensten/wmts?request=getcapabilities&service=wmts&version=1.0.0
 
-proj4.defs('EPSG:31370', // Belge 1972 / Belgian Lambert 72, source: http://epsg.io/31370
-	'+proj=lcc +lat_1=51.16666723333333 +lat_2=49.8333339 +lat_0=90 +lon_0=4.367486666666666 +x_0=150000.013 +y_0=5400088.438 +ellps=intl ' +
-	'+towgs84=-106.869,52.2978,-103.724,0.3366,-0.457,1.8422,-1.2747 +units=m +no_defs');
+// Belge 1972 / Belgian Lambert 72
+var code = 'EPSG:31370';
+var proj4def = '+proj=lcc +lat_1=51.16666723333333 +lat_2=49.8333339 +lat_0=90 +lon_0=4.367486666666666 +x_0=150000.013 +y_0=5400088.438 +ellps=intl ' +
+	'+towgs84=-106.869,52.2978,-103.724,0.3366,-0.457,1.8422,-1.2747 +units=m +no_defs'; // source: http://epsg.io/31370
+var bounds = [[9928.000000, 66928.000000], [272072.000000, 329072.000000]]; // BoundingBox
 
-var crs = L.Proj4.crs('EPSG:31370', {
-	bounds: [[9928.000000, 66928.000000], [272072.000000, 329072.000000]], // BoundingBox
-//	projection: undefined,
-//	proj4def: undefined,
-//	transformation: undefined,
-	origin: [9928.000000, 329072.000000], // TopLeftCorner
-//	scale: undefined,
-//	resolution: undefined,
-	scaleDenominator: 3657142.85714285727590322495
-});
+switch (window.location.search.slice(1)) { // ?<variant>
+	case '1':
+		// variant 1
+
+		var crs = L.Proj4.crs(code, {
+			bounds: bounds,
+//			projection: undefined,
+			proj4def: proj4def,
+//			transformation: undefined,
+			origin: [9928.000000, 329072.000000], // TopLeftCorner
+//			scale: undefined,
+//			resolution: undefined,
+			scaleDenominator: 3657142.85714285727590322495
+		});
+		break;
+	case '2':
+		// variant 2
+
+		var projection = L.Proj4.projection(code, proj4def, bounds);
+
+		var crs = L.Proj4.crs(code, {
+//			bounds: undefined,
+			projection: projection,
+//			proj4def: undefined,
+//			transformation: undefined,
+			origin: [9928.000000, 329072.000000], // TopLeftCorner
+//			scale: undefined,
+//			resolution: undefined,
+			scaleDenominator: 3657142.85714285727590322495
+		});
+		break;
+	case '3':
+		// fall through
+	default:
+		// variant 3
+
+		proj4.defs(code, proj4def);
+
+		var crs = L.Proj4.crs(code, {
+			bounds: bounds,
+//			projection: undefined,
+//			proj4def: undefined,
+//			transformation: undefined,
+			origin: [9928.000000, 329072.000000], // TopLeftCorner
+//			scale: undefined,
+//			resolution: undefined,
+			scaleDenominator: 3657142.85714285727590322495
+		});
+}
 
 var map = L.map(document.body, {
 	crs: crs,
 //	center: [50, 5], // Ardennes, BE
 //	zoom: 5,
-	layers: L.tileLayer('http://tile.informatievlaanderen.be/ws/raadpleegdiensten/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=grb_bsk&STYLE=&FORMAT=image/png&TILEMATRIXSET=BPL72VL&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}', {
+	layers: L.tileLayer('https://tile.informatievlaanderen.be/ws/raadpleegdiensten/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=grb_bsk&STYLE=&FORMAT=image/png&TILEMATRIXSET=BPL72VL&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}', {
 		maxNativeZoom: 15,
 		attribution: '<a href="https://overheid.vlaanderen.be/informatie-vlaanderen">Informatie Vlaanderen</a>'
 	})
